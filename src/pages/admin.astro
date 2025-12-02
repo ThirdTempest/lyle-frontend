@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AdminDashboard from '../components/AdminDashboard';
+---
+
+<Layout>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 mb-8">Admin Dashboard</h1>
+    <AdminDashboard client:only="react" />
+  </div>
+</Layout>

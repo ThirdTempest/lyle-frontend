@@ -1,0 +1,25 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout>
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="text-center">
+      <h2 class="text-2xl font-semibold text-gray-900">Authenticating...</h2>
+      <p class="mt-2 text-gray-600">Please wait while we log you in.</p>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+
+  if (token) {
+    localStorage.setItem('auth_token', token);
+    // Fetch user details to store in state/storage if needed
+    window.location.href = '/';
+  } else {
+    window.location.href = '/login?error=auth_failed';
+  }
+</script>

@@ -1,0 +1,55 @@
+---
+import CartCounter from "./CartCounter";
+---
+<header class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <div class="flex-shrink-0 flex items-center">
+        <a href="/" class="text-2xl font-bold text-gray-900">iPhone Store</a>
+      </div>
+      <nav class="hidden md:flex space-x-8">
+        <a href="/" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Home</a>
+        <a href="/products" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">iPhones</a>
+        <a href="/accessories" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Accessories</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <a href="/cart" class="text-gray-500 hover:text-gray-900 relative">
+          <span class="sr-only">Cart</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <CartCounter client:load />
+        </a>
+        <div id="auth-links" class="flex items-center space-x-4">
+            <a href="/login" id="login-btn" class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Login</a>
+            <div id="user-menu" class="hidden flex items-center space-x-4">
+                <span class="text-sm text-gray-700">Welcome</span>
+                <a href="/orders" class="text-gray-500 hover:text-gray-900 text-sm font-medium">Orders</a>
+                <a href="/admin" class="text-gray-500 hover:text-gray-900 text-sm font-medium">Admin</a>
+                <button id="logout-btn" class="text-gray-500 hover:text-gray-900 text-sm font-medium">Logout</button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const token = localStorage.getItem('auth_token');
+  const loginBtn = document.getElementById('login-btn');
+  const userMenu = document.getElementById('user-menu');
+  const logoutBtn = document.getElementById('logout-btn');
+
+  if (token) {
+    loginBtn.classList.add('hidden');
+    userMenu.classList.remove('hidden');
+  } else {
+    loginBtn.classList.remove('hidden');
+    userMenu.classList.add('hidden');
+  }
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('auth_token');
+    window.location.href = '/';
+  });
+</script>
