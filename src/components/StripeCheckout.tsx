@@ -5,7 +5,7 @@ import { useStore } from '@nanostores/react';
 import { cartItems } from '../stores/cart';
 
 // Replace with your actual publishable key
-const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
+const stripePromise = loadStripe(import.meta.env.PUBLIC_STRIPE_KEY);
 
 function CheckoutForm() {
     const stripe = useStripe();
@@ -88,18 +88,31 @@ export default function StripeCheckout() {
     const $cartItems = useStore(cartItems);
     const items = Object.values($cartItems);
 
+    const [error, setError] = useState<string | null>(null);
+
     useEffect(() => {
         if (items.length > 0) {
+            const token = localStorage.getItem('auth_token');
             // Create PaymentIntent as soon as the page loads
             fetch("http://127.0.0.1:8000/api/create-payment-intent", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ items }),
             })
-                .then((res) => res.json())
-                .then((data) => setClientSecret(data.clientSecret));
+                .then((res) => {
+                    if (!res.ok) throw new Error('Failed to initialize payment');
+                    return res.json();
+                })
+                .then((data) => setClientSecret(data.clientSecret))
+                .catch((err) => {
+                    console.error("Error fetching payment intent:", err);
+                    setError("Payment system is currently unavailable. Please check back later.");
+                });
         }
-    }, [items]);
+    }, [JSON.stringify(items)]);
 
     const appearance = {
         theme: 'stripe',
@@ -115,11 +128,19 @@ export default function StripeCheckout() {
 
     return (
         <div className="App">
-            {clientSecret && (
+            {error ? (
+                <div className="text-red-600 text-center p-4 bg-red-50 rounded-md">
+                    <p>{error}</p>
+                </div>
+            ) : clientSecret ? (
                 // @ts-ignore
                 <Elements options={options} stripe={stripePromise}>
                     <CheckoutForm />
                 </Elements>
+            ) : (
+                <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                </div>
             )}
         </div>
     );

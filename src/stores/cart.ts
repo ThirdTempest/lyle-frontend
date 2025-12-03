@@ -8,7 +8,22 @@ export type CartItem = {
     quantity: number;
 };
 
-export const cartItems = map<Record<number, CartItem>>({});
+let savedCart = {};
+if (typeof localStorage !== 'undefined') {
+    try {
+        savedCart = JSON.parse(localStorage.getItem('cart') || '{}');
+    } catch (e) {
+        console.error('Failed to parse cart from localStorage:', e);
+        localStorage.removeItem('cart');
+    }
+}
+export const cartItems = map<Record<number, CartItem>>(savedCart);
+
+if (typeof localStorage !== 'undefined') {
+    cartItems.subscribe(value => {
+        localStorage.setItem('cart', JSON.stringify(value));
+    });
+}
 
 export function addCartItem(item: Omit<CartItem, 'quantity'>) {
     const existingEntry = cartItems.get()[item.id];
@@ -23,4 +38,10 @@ export function addCartItem(item: Omit<CartItem, 'quantity'>) {
             quantity: 1,
         });
     }
+}
+
+export function removeCartItem(itemId: number) {
+    const currentItems = cartItems.get();
+    const { [itemId]: _, ...rest } = currentItems;
+    cartItems.set(rest);
 }

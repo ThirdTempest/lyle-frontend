@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '@nanostores/react';
-import { cartItems, type CartItem } from '../stores/cart';
+import { cartItems, removeCartItem, type CartItem } from '../stores/cart';
 
 export default function CartList() {
     const $cartItems = useStore(cartItems);
@@ -42,7 +42,13 @@ export default function CartList() {
                                 <p className="text-gray-500">Qty {item.quantity}</p>
 
                                 <div className="flex">
-                                    <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">Remove</button>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeCartItem(item.id)}
+                                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                                    >
+                                        Remove
+                                    </button>
                                 </div>
                             </div>
                         </div>
